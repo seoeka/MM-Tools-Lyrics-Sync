@@ -1,16 +1,140 @@
-# React + Vite
+# ✨ Lyrics Sync
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A lightweight web tool to manually synchronize song lyrics with audio — built with **React + Vite**.
 
-Currently, two official plugins are available:
+This tool is designed to help you **sync lyrics yourself**, especially for songs that only provide short preview clips on streaming platforms. Simply upload your own audio, paste the lyrics, and start syncing directly in the browser.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## 🎯 Purpose
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Many songs are only available as short previews, making it difficult to sync lyrics properly using traditional tools.
 
-## Expanding the ESLint configuration
+**Lyrics Sync** solves that by letting you:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- 🎵 Upload your own full audio file  
+- 📝 Paste raw lyrics  
+- ⏱️ Sync timestamps manually in a simple interface  
+- 📤 Export ready-to-use timed lyrics  
+
+While this is still **Version 1**, it already provides a solid and practical workflow for manual syncing.
+
+---
+
+## 🚀 Features
+
+- 🎵 Upload local audio files  
+- 📝 Paste and edit lyrics  
+- ⏱️ Manual timestamp syncing (line-by-line)  
+- ▶️ Play-per-line navigation  
+- 🎯 Accurate focus tracking (auto highlight based on playback)  
+- 🔄 Re-sync from any point without clearing previous timestamps  
+- 📤 Export synced lyrics as `.txt`  
+
+---
+
+## 🧠 How It Works
+
+- The player uses **real-time playback** as the source of truth  
+- Each lyric line can be assigned a timestamp  
+- Syncing is done progressively using keyboard or UI controls  
+- Focus automatically follows the current playback position  
+
+---
+
+## 🧪 Current Limitations (v1)
+
+- The environment is **not yet identical** to professional lyric-sync tools  
+- Some advanced behaviors and edge cases are still being refined  
+- UI/UX is intentionally kept simple for speed and usability  
+
+That said — it’s already very usable for real-world syncing.
+
+---
+
+## 🛠️ How to Use
+
+### 1. Load Audio
+- Click the 🎵 button  
+- Upload your local audio file  
+
+### 2. Add Lyrics
+- Paste your lyrics in **Lyrics mode**  
+
+### 3. Enter Sync Mode
+- Click **Sync**  
+- Make sure audio + lyrics are loaded  
+
+### 4. Start Syncing
+- Press ▶️ to play  
+
+Then use:
+- `↓` or button `˅` → set timestamp for current/next line  
+- `↑` or button `˄` → remove last timestamp  
+- Click a line → jump & play from that line  
+- Double-click → edit text  
+
+> ⚠️ Sync starts after you manually press play.
+
+---
+
+## 🎚️ Fine Adjust
+
+Use:
+- `<` `<<` → move earlier  
+- `>` `>>` → move later  
+
+---
+
+## 🏁 End Marker
+
+- Scroll to `(End)`  
+- Set the final timestamp  
+- This marks the end of the lyrics  
+
+---
+
+## 📤 Export
+
+- Click ⬇️ to download your synced lyrics  
+
+---
+
+## ⌨️ Keyboard Shortcuts
+
+| Key        | Action                  |
+|------------|------------------------|
+| `Enter`    | Play / Pause           |
+| `↓`        | Sync next line         |
+| `↑`        | Undo last sync         |
+| `←` / `→`  | Shift timing           |
+
+---
+
+## 🔮 Upcoming Improvements
+
+Planned updates include:
+
+- More advanced sync behaviors  
+- Improved editing experience  
+- Better alignment with professional lyric-sync environments  
+- More precise control and feedback  
+- UI refinements and performance improvements  
+
+The goal is to make this tool feel **as close as possible to professional tools — or even better**, while staying simple and fast.
+
+---
+
+## ⚙️ Tech Stack
+
+- React  
+- Vite  
+- Vanilla styling (no heavy UI framework)  
+
+---
+
+## 🧑‍💻 Development
+
+```bash
+npm install
+npm run dev
