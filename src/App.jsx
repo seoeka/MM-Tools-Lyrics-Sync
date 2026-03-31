@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/refs */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 const CONTROL_WIDTH = 430;
@@ -25,6 +24,16 @@ function formatPlayerTime(seconds) {
   return `${String(mm).padStart(2, "0")}:${String(ss).padStart(2, "0")}`;
 }
 
+function formatSectionMarkerLabel(text = "") {
+  const normalized = text.trim().replace(/^#/, "").toLowerCase();
+  if (!normalized) return "";
+
+  return normalized
+    .split("-")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join("-");
+}
+
 function stripExtension(name) {
   return name.replace(/\.[^.]+$/, "");
 }
@@ -35,6 +44,26 @@ function makeId() {
 
 function createLine(text = "", time = null, id = makeId()) {
   return { id, text, time };
+}
+
+function isNonSyncSectionText(text = "") {
+  return [
+    "#INTRO",
+    "#VERSE",
+    "#PRE-CHORUS",
+    "#CHORUS",
+    "#BRIDGE",
+    "#HOOK",
+    "#OUTRO",
+  ].includes(text.trim().toUpperCase());
+}
+
+function isSyncableLine(line) {
+  if (!line) return false;
+  const text = line.text?.trim() ?? "";
+  if (!text) return false;
+
+  return !isNonSyncSectionText(text);
 }
 
 function isBlankLine(line) {
@@ -66,19 +95,19 @@ function downloadText(filename, text) {
 }
 
 function firstNonBlankIndex(lines) {
-  return lines.findIndex((line) => !isBlankLine(line));
+  return lines.findIndex((line) => isSyncableLine(line));
 }
 
 function nextNonBlankIndex(lines, fromIndex) {
   for (let i = fromIndex + 1; i < lines.length; i += 1) {
-    if (!isBlankLine(lines[i])) return i;
+    if (isSyncableLine(lines[i])) return i;
   }
   return -1;
 }
 
 function prevNonBlankIndex(lines, fromIndex) {
   for (let i = fromIndex - 1; i >= 0; i -= 1) {
-    if (!isBlankLine(lines[i])) return i;
+    if (isSyncableLine(lines[i])) return i;
   }
   return -1;
 }
@@ -104,7 +133,7 @@ function nearestNonBlankIndex(lines, fromIndex) {
 function getPrevTimedTime(lines, index) {
   for (let i = index - 1; i >= 0; i -= 1) {
     const line = lines[i];
-    if (!isBlankLine(line) && line.time != null) return line.time;
+    if (isSyncableLine(line) && line.time != null) return line.time;
   }
   return null;
 }
@@ -112,7 +141,7 @@ function getPrevTimedTime(lines, index) {
 function getNextTimedTime(lines, index) {
   for (let i = index + 1; i < lines.length; i += 1) {
     const line = lines[i];
-    if (!isBlankLine(line) && line.time != null) return line.time;
+    if (isSyncableLine(line) && line.time != null) return line.time;
   }
   return null;
 }
@@ -122,7 +151,7 @@ function getLastTimedIndexAtOrBefore(lines, currentTime) {
 
   for (let i = 0; i < lines.length; i += 1) {
     const line = lines[i];
-    if (!isBlankLine(line) && line.time != null && line.time <= currentTime + TIME_EPSILON) {
+    if (isSyncableLine(line) && line.time != null && line.time <= currentTime + TIME_EPSILON) {
       lastTimedIndex = i;
     }
   }
@@ -902,17 +931,35 @@ export default function App() {
 
   const progressPercent = duration > 0 ? Math.min(100, (currentTime / duration) * 100) : 0;
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const NON_SYNC_SECTION_MARKERS = new Set([
+    "#INTRO",
+    "#VERSE",
+    "#PRE-CHORUS",
+    "#CHORUS",
+    "#BRIDGE",
+    "#HOOK",
+    "#OUTRO",
+  ]);
+
   const isInstrumentalLine = useCallback((line) => (
     line?.text?.trim() === "#INSTRUMENTAL"
   ), []);
 
+  const isNonSyncSectionLine = useCallback((line) => (
+    NON_SYNC_SECTION_MARKERS.has(line?.text?.trim().toUpperCase())
+  ), [NON_SYNC_SECTION_MARKERS]);
+
   const getLineDisplayColor = useCallback((line, index, active) => {
     const blank = isBlankLine(line);
     const editing = mode === "sync" && !isPlaying && editingIndex === index;
-    const hasTime = line.time != null;
+    const nonSyncSection = isNonSyncSectionLine(line);
+    const instrumental = isInstrumentalLine(line);
+    const hasTime = !nonSyncSection && line.time != null;
 
     if (editing) return "#111";
     if (blank) return "#a7a7a7";
+    if (nonSyncSection || instrumental) return "#666";
 
     if (hasTime) {
       return line.time <= currentTime + TIME_EPSILON
@@ -921,7 +968,7 @@ export default function App() {
     }
 
     return active ? "#3d73ff" : "#a7a7a7";
-  }, [mode, isPlaying, editingIndex, currentTime]);
+  }, [mode, isPlaying, editingIndex, currentTime, isNonSyncSectionLine, isInstrumentalLine]);
 
   const renderTimestampControls = useCallback(({
     hasTime,
@@ -1020,6 +1067,7 @@ export default function App() {
   const renderText = useCallback((line, i, color) => {
     const blank = isBlankLine(line);
     const instrumental = isInstrumentalLine(line);
+    const nonSyncSection = isNonSyncSectionLine(line);
     const editing = mode === "sync" && !isPlaying && editingIndex === i;
 
     if (editing) {
@@ -1079,10 +1127,45 @@ export default function App() {
             alignSelf: "flex-start",
           }}
         >
-          (Instrumental)
+          Instrumental
         </button>
       );
     }
+
+    if (nonSyncSection) {
+    return (
+      <button
+        type="button"
+        onClick={() => {
+          if (clickTimerRef.current) {
+            clearTimeout(clickTimerRef.current);
+          }
+
+          clickTimerRef.current = setTimeout(() => {
+            setSelected(i);
+            clickTimerRef.current = null;
+          }, 220);
+        }}
+        onDoubleClick={() => {
+          handleLineDoubleClick(i);
+        }}
+        style={{
+          border: "none",
+          background: "#f2f2f2",
+          color: "#666",
+          borderRadius: 999,
+          padding: "8px 16px",
+          fontWeight: 700,
+          cursor: "pointer",
+          minHeight: 34,
+          whiteSpace: "pre-wrap",
+          alignSelf: "flex-start",
+        }}
+      >
+        {formatSectionMarkerLabel(line.text)}
+      </button>
+    );
+  }
 
     return (
     <div
@@ -1115,11 +1198,12 @@ export default function App() {
       {blank ? " " : line.text}
     </div>
     );
-  }, [editingIndex, isInstrumentalLine, isPlaying, mode, updateLineText, handleLineSingleClick, handleLineDoubleClick]);
+  }, [isInstrumentalLine, isNonSyncSectionLine, mode, isPlaying, editingIndex, updateLineText, handleLineSingleClick, handleLineDoubleClick]);
 
   const renderSyncRow = useCallback((line, i) => {
     const blank = isBlankLine(line);
-    const hasTime = line.time != null;
+    const nonSyncSection = isNonSyncSectionLine(line);
+    const hasTime = !nonSyncSection && line.time != null;
     const active = i === selected;
     const color = getLineDisplayColor(line, i, active);
 
@@ -1157,6 +1241,7 @@ export default function App() {
     canShiftTimestamp,
     playFromTime,
     renderText,
+    isNonSyncSectionLine,
   ]);
 
   const renderSpacerMarker = useCallback((label, onClick) => (
