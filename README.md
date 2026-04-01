@@ -1,139 +1,88 @@
-# ✨ Lyrics Sync
+# Lyrics Sync
 
-A lightweight web tool to manually synchronize song lyrics with audio — built with **React + Vite**.
-
-This tool is designed to help you **sync lyrics yourself**, especially for songs that only provide short preview clips on streaming platforms. Simply upload your own audio, paste the lyrics, and start syncing directly in the browser.
+A small web tool to sync song lyrics with your own audio, directly in the browser.
 
 ---
 
-## 🎯 Purpose
+## What it does
 
-Many songs are only available as short previews, making it difficult to sync lyrics properly using traditional tools.
+This tool lets you:
+- upload your own audio
+- paste lyrics
+- sync timing manually
+- export the result
 
-**Lyrics Sync** solves that by letting you:
-
-- 🎵 Upload your own full audio file  
-- 📝 Paste raw lyrics  
-- ⏱️ Sync timestamps manually in a simple interface  
-- 📤 Export ready-to-use timed lyrics  
-
-While this is still **Version 1**, it already provides a solid and practical workflow for manual syncing.
+That’s it.
 
 ---
 
-## 🚀 Features
+## Features
 
-- 🎵 Upload local audio files  
-- 📝 Paste and edit lyrics  
-- ⏱️ Manual timestamp syncing (line-by-line)  
-- ▶️ Play-per-line navigation  
-- 🎯 Accurate focus tracking (auto highlight based on playback)  
-- 🔄 Re-sync from any point without clearing previous timestamps  
-- 📤 Export synced lyrics as `.txt`  
-
----
-
-## 🧠 How It Works
-
-- The player uses **real-time playback** as the source of truth  
-- Each lyric line can be assigned a timestamp  
-- Syncing is done progressively using keyboard or UI controls  
-- Focus automatically follows the current playback position  
+- load local audio
+- edit lyrics
+- set timestamps per line
+- jump to any line
+- auto highlight during playback
+- adjust timing without resetting everything
+- export to `.txt`
 
 ---
 
-## 🧪 Current Limitations (v1)
+## How to use
 
-- The environment is **not yet identical** to professional lyric-sync tools  
-- Some advanced behaviors and edge cases are still being refined  
-- UI/UX is intentionally kept simple for speed and usability  
+1. Load audio  
+   Click the 🎵 button and upload your file
 
-That said — it’s already very usable for real-world syncing.
+2. Add lyrics  
+   Paste your lyrics in Lyrics mode
 
----
+3. Start syncing  
+   Go to Sync mode and press play
 
-## 🛠️ How to Use
-
-### 1. Load Audio
-- Click the 🎵 button  
-- Upload your local audio file  
-
-### 2. Add Lyrics
-- Paste your lyrics in **Lyrics mode**  
-
-### 3. Enter Sync Mode
-- Click **Sync**  
-- Make sure audio + lyrics are loaded  
-
-### 4. Start Syncing
-- Press ▶️ to play  
-
-Then use:
-- `↓` or button `˅` → set timestamp for current/next line  
-- `↑` or button `˄` → remove last timestamp  
-- Click a line → jump & play from that line  
-- Double-click → edit text  
-
-> ⚠️ Sync starts after you manually press play.
+   - `↓` → set next line  
+   - `↑` → undo  
+   - click line → jump  
+   - double click → edit  
 
 ---
 
-## 🎚️ Fine Adjust
+## Adjust timing
 
-Use:
-- `<` `<<` → move earlier  
-- `>` `>>` → move later  
-
----
-
-## 🏁 End Marker
-
-- Scroll to `(End)`  
-- Set the final timestamp  
-- This marks the end of the lyrics  
+- `<` / `<<` → earlier  
+- `>` / `>>` → later  
 
 ---
 
-## 📤 Export
+## End
 
-- Click ⬇️ to download your synced lyrics  
-
----
-
-## ⌨️ Keyboard Shortcuts
-
-| Key        | Action                  |
-|------------|------------------------|
-| `Enter`    | Play / Pause           |
-| `↓`        | Sync next line         |
-| `↑`        | Undo last sync         |
-| `←` / `→`  | Shift timing           |
+Scroll to `(End)` and set the last timestamp.
 
 ---
 
-## 🔮 Upcoming Improvements
+## Export
 
-Planned updates include:
-
-- More advanced sync behaviors  
-- Improved editing experience  
-- Better alignment with professional lyric-sync environments  
-- More precise control and feedback  
-- UI refinements and performance improvements  
-
-The goal is to make this tool feel **as close as possible to professional tools — or even better**, while staying simple and fast.
+Click ⬇️ to download the file.
 
 ---
 
-## ⚙️ Tech Stack
+## Shortcuts
 
-- React  
-- Vite  
-- Vanilla styling (no heavy UI framework)  
+| Key | Action |
+|-----|--------|
+| Enter | Play / Pause |
+| ↓ | Next line |
+| ↑ | Undo |
+| ← / → | Shift timing |
 
 ---
 
-## 🧑‍💻 Development
+## Notes
+
+Not a full-featured as pro tools (iykyk), but still works fine.
+
+---
+
+## Run
 
 ```bash
 npm install
